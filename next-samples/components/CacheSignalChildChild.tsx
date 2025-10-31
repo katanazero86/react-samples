@@ -1,4 +1,4 @@
-import { cachedFetchDataWithCancellation } from "@/utils/mock.utils";
+import { cachedFetchDataWithCancellation } from "@/utils/signal.utils";
 
 export default async function CacheSignalChildChild() {
 

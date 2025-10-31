@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import CacheSignalChildChild from "@/components/CacheSignalChildChild";
 
-
 export default async function CacheSignalChild() {
 
     return (

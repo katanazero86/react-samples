@@ -1,4 +1,4 @@
-import { cachedFetchDataWithCancellation } from "@/utils/mock.utils";
+import { cachedFetchDataWithCancellation } from "@/utils/signal.utils";
 import { redirect } from "next/navigation";
 
 export default async function CacheSignalChild3() {
