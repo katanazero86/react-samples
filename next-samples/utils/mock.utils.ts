@@ -1,0 +1,28 @@
+import { cache } from "react";
+
+export const createMocks = (length: number = 0) => {
+
+    console.log('createMock calls..')
+    const mocks = []
+
+    for(let i = 0; i < length; i++) {
+        mocks.push({
+            id: i,
+            name: `mock-${i}`
+        })
+    }
+
+    return mocks;
+}
+
+
+export const cachedCreateMocks = cache(createMocks)
+
+
+async function getTodoById(id: number) {
+    console.log('getTodoById calls..')
+    const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
+    return response.json()
+}
+
+export const cachedGetTodoById = cache(getTodoById)
