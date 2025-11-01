@@ -1,9 +1,6 @@
-// import { cache } from "react";
-import { cachedCreateMocks, createMocks } from "@/utils/mock.utils";
+import { cachedCreateMocks } from "@/utils/mock.utils";
 import Link from "next/link";
-import About2Child from "@/components/About2Child";
-
-// const cachedCreateMocks = cache(createMocks)
+import About2Child from "@/components/cache/About2Child";
 
 export default function About2Page() {
 

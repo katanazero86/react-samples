@@ -1,7 +1,7 @@
-import CacheSignalChild from "@/components/CacheSignalChild";
-import CacheSignalChild2 from "@/components/CacheSignalChild2";
-import CacheSignalChild3 from "@/components/CacheSignalChild3";
-import { PageSwitcher } from "@/components/PageSwitcher";
+import CacheSignalChild from "@/components/cacheSignal/CacheSignalChild";
+import CacheSignalChild2 from "@/components/cacheSignal/CacheSignalChild2";
+import CacheSignalChild3 from "@/components/cacheSignal/CacheSignalChild3";
+import { PageSwitcher } from "@/components/cacheSignal/PageSwitcher";
 
 export default async function SignalPage({ searchParams }: { searchParams: Promise<{ page: string }> }) {
     const { page = 'page1' } = await searchParams

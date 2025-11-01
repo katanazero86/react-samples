@@ -1,4 +1,4 @@
-import About3Child from "@/components/About3Child";
+import About3Child from "@/components/cache/About3Child";
 import { cachedGetTodoById } from "@/utils/mock.utils";
 
 export default function About3Page() {
