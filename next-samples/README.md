@@ -62,3 +62,51 @@ cache() 는 함수 호출 단위 메모이제이션,
 Next.js의 Request Memoization 은 fetch 호출 단위 자동 메모이제이션이다.
 둘 다 SSR 요청 단위로 유지되지만, cache()는 명시적이며 fetch와 무관하게 쓸 수 있고,   
 fetch memoization은 Next.js가 자동으로 처리한다
+
+### cacheSignal
+
+- React 서버 컴포넌트 전용 API
+- 참조: https://react.dev/reference/react/cacheSignal
+
+```
+import { cacheSignal } from 'react'
+
+const signal = cacheSignal();
+```
+
+- cacheSignal() 은 반드시 cache() 내부에서 사용하고, fetch는 컴포넌트 렌더링 중에 시작되어야 제대로 동작
+```
+
+// 전역에서 fetch 시작 (렌더링 외부)
+const userPromise = fetch('/api/user', { 
+  signal: cacheSignal() // ❌ 작동 안 함!
+});
+
+async function UserProfile() {
+  const user = await userPromise;
+  return <div>{user.name}</div>
+}
+
+// Component가 unmount되어도 fetch는 계속 진행됨!
+```
+
+- cacheSignal()은 Server Component에서만 의미가 있음
+- 렌더링이 성공적으로 완료되면, signal을 abort 시킴
+
+- 렌더링을 성공적으로 완료 / 렌더링이 중단 / 렌더링이 실패 -> 이 세 가지 경우에 abort 가 일어남
+- cacheSignal 은 같은 렌더 패스 내에서만 abort
+
+```
+/signal?page=page1 -> 쿼리스트링을 바꾸면, abort 될까? 안됌 = 쿼리스트링이 변경 된다는 것은 새로운 URL이고 서버 컴포넌트가 새로 렌더링이 일어남
+Switch Page 2 를 클릭하면, signal?page=page1 에 대한 서버 측 요청이 실행되어 콘솔에 출력되는 것을 확인할 수 있음.
+/signal?page=page2 -> data fetch 를 await 로 기다리지 않고 렌더링을 완료하면 abort 가 일어남.(시연을 위한 예제일뿐 좋은 예제는 아님)
+/signal?page=page3 -> 1.5초 이후 동일한 URL로 리다이렉트 하고 이전에 진행중인 요청은 abort 가 발생
+redirect() 는 서버측에서 실행이 되고, 여기에 다른 URL을 입력하면 컴포넌트 렌더링이 중단된다라는 것을 캐치하기 때문에 abort 가 발생한다.
+
+/signal2 -> 2개의 서버 컴포넌트를 포함하고 있고, 한쪽에서 에러가 발생하면 abort 가 일어날까 하였으나 일어나지 않음.
+
+```
+
+- <Link> 컴포넌트 및 router.push() 를 활용하여 동일한 URL을 요청하더라도 abort 가 발생하지 않음(클라이언트 측 라우팅) 
+
+Demo 를 만들어보려고 했으나, 생각보다 시연이 자유로운 API가 아니라서 잠시 keep.
