@@ -45,6 +45,65 @@ import { Activity } from 'react';
 5. hidden 인 Activity 는 컴포넌트가 unmount 된걸로 생각해야 함
 6. 예전 조건부 렌더링을 통한 상태 유지를 위해 key prop 을 사용하던 방식보다 훨씬 우아한 방법
 
+Firer Node에는 여러가지 속성이 있는데, tag 과 memoizedState 두 가지 속성이 존재한다.   
+tag 는 해당 파이버 노드가 어떤 컴포넌트인지 나타내는 속성이다. 
+
+```
+export const FunctionComponent = 0;
+export const ClassComponent = 1;
+export const HostRoot = 3; // Root of a host tree. Could be nested inside another node.
+export const HostPortal = 4; // A subtree. Could be an entry point to a different renderer.
+export const HostComponent = 5;
+export const HostText = 6;
+export const Fragment = 7;
+export const Mode = 8;
+export const ContextConsumer = 9;
+export const ContextProvider = 10;
+export const ForwardRef = 11;
+export const Profiler = 12;
+export const SuspenseComponent = 13;
+export const MemoComponent = 14;
+export const SimpleMemoComponent = 15;
+export const LazyComponent = 16;
+export const IncompleteClassComponent = 17;
+export const DehydratedFragment = 18;
+export const SuspenseListComponent = 19;
+export const ScopeComponent = 21;
+export const OffscreenComponent = 22;
+export const LegacyHiddenComponent = 23;
+export const CacheComponent = 24;
+export const TracingMarkerComponent = 25;
+export const HostHoistable = 26;
+export const HostSingleton = 27;
+export const IncompleteFunctionComponent = 28;
+export const Throw = 29;
+export const ViewTransitionComponent = 30;
+export const ActivityComponent = 31;
+```
+31번이 ActivityComponent를 나타낸다.   
+Activity 컴포넌트는 내부적으로 자동으로 Offscreen 컴포넌트로 감싸서 children을 렌더링합니다.
+
+```
+ActivityComponent (tag=31)
+  └── children: OffscreenComponent (tag=22) 
+      └── children: 실제 자식 컴포넌트들
+```
+
+- OffscreenComponent의 역할:   
+mode 속성으로 visible/hidden 상태 제어   
+hidden 상태에서도 fiber 트리와 DOM을 유지   
+visibility 전환 시 재마운트 없이 show/hide만 처리
+
+```
+visible 상태: memoizedState가 null
+hidden 상태: memoizedState에 OffscreenState 객체 존재
+```
+실제로 hidden 으로 상태를 변경하면, useEffect() 클린업이 동작을 하나 실제 컴포넌트가 언마운트 되는 것은 아니다.   
+visible 상태로 전환 할 때도, effect 함수를 재실행하지만, 실제로 재마운트 되는 것은 아니다.
+
+결론적으로는 해당 컴포넌트 인스턴스에 display: none 을 설정하고, 컴포넌트 인스턴스를 재사용 하는 것이다.
+
+
 ### useEffectEvent
 useEffectEvent는 Effect 내부의 비반응형(non-reactive) 로직을 분리할 수 있게 해주는 훅
 
